@@ -1,0 +1,1159 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>VRChat Tournament Manager</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #0b1020;
+      color: #f5f5f5;
+    }
+    header {
+      padding: 12px 20px;
+      background: #151b30;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+    .admin-panel {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    input, button, select {
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: none;
+      font-size: 14px;
+    }
+    input {
+      background: #0b1020;
+      color: #f5f5f5;
+      border: 1px solid #33395a;
+    }
+    button {
+      cursor: pointer;
+      background: #3498db;
+      color: white;
+    }
+    button.secondary {
+      background: #555;
+    }
+    button.danger {
+      background: #e74c3c;
+    }
+    button.small {
+      padding: 2px 6px;
+      font-size: 12px;
+    }
+    main {
+      padding: 12px 20px 40px;
+    }
+    .tabs {
+      margin-bottom: 10px;
+    }
+    .tab-btn {
+      padding: 6px 10px;
+      margin-right: 5px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      background: #22273d;
+      color: #aaa;
+    }
+    .tab-btn.active {
+      background: #3498db;
+      color: white;
+    }
+    .card {
+      background: #151b30;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #252b42;
+      text-align: left;
+    }
+    th {
+      background: #1b2238;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    tr:nth-child(even) td {
+      background: #111526;
+    }
+    tr:nth-child(odd) td {
+      background: #0e1322;
+    }
+    .tiny-label {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+    .flex {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .flex-space {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .group-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .group-card {
+      background: #101528;
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .group-card h3 {
+      margin: 0 0 4px 0;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+    .player-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      margin: 2px 0;
+    }
+    .icon-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #aaa;
+      padding: 0;
+      font-size: 14px;
+    }
+    .icon-btn:hover {
+      color: #fff;
+    }
+    .bubble-card {
+      background: #101528;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+    .players-layout {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .player-list {
+      max-height: 360px;
+      overflow-y: auto;
+      border-radius: 8px;
+      border: 1px solid #1e253b;
+      padding: 4px;
+      background: #0b1020;
+    }
+    .player-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      background: #151b30;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .player-pill.selected {
+      border-color: #2ecc71;
+      background: #102018;
+    }
+    .player-main {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .player-name {
+      font-size: 13px;
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .badge {
+      padding: 0 6px;
+      border-radius: 999px;
+      background: #2c3e50;
+      font-size: 10px;
+    }
+    .edit-panel {
+      margin-top: 4px;
+      margin-left: 18px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      background: #0e1426;
+      border: 1px solid #252b42;
+    }
+    .edit-panel label {
+      font-size: 11px;
+      margin-right: 8px;
+    }
+    .edit-panel input[type=checkbox] {
+      margin-right: 2px;
+    }
+    .edit-panel-buttons {
+      margin-top: 4px;
+      text-align: right;
+    }
+    .player-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .player-delete {
+      background: transparent;
+      border: none;
+      color: #e74c3c;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .search-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .search-row input {
+      flex: 1;
+    }
+    .hint {
+      margin-top: 4px;
+      font-size: 11px;
+      color: #f1c40f;
+    }
+    .hint span.suggestion-name {
+      font-weight: bold;
+    }
+    .selected-list {
+      max-height: 360px;
+      overflow-y: auto;
+      border-radius: 8px;
+      border: 1px solid #1e253b;
+      padding: 4px;
+      background: #0b1020;
+      font-size: 13px;
+    }
+    .selected-item {
+      padding: 4px 6px;
+      border-radius: 6px;
+      background: #151b30;
+      margin-bottom: 4px;
+    }
+    .scroll {
+      max-height: 480px;
+      overflow-y: auto;
+    }
+    .winner {
+      font-weight: bold;
+      color: #2ecc71;
+    }
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: #e74c3c;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      display: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    /* Modal */
+    #modalOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    #modal {
+      background: #151b30;
+      border-radius: 10px;
+      padding: 16px 20px;
+      max-width: 360px;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    }
+    #modal h3 {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+    #modalButtons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .dev-tools {
+      margin-top: 10px;
+      text-align: right;
+    }
+    .dev-tools button {
+      font-size: 11px;
+      padding: 3px 6px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>VRChat Tournament Manager</h1>
+    <div class="admin-panel">
+      <span id="adminStatus" class="tiny-label">Not admin</span>
+      <input id="adminPassword" type="password" placeholder="Admin password" />
+      <button id="adminLoginBtn">Login as Admin</button>
+    </div>
+  </header>
+  <main>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="groups" id="tabBtn-groups">Groups</button>
+      <button class="tab-btn" data-tab="matches" id="tabBtn-matches">Matches</button>
+      <button class="tab-btn" data-tab="scoreboard" id="tabBtn-scoreboard">Scoreboard</button>
+    </div>
+
+    <!-- Groups tab -->
+    <div id="tab-groups" class="tab card">
+      <div class="flex-space">
+        <h2>Groups & Players</h2>
+        <div class="flex">
+          <button id="randomizeBtn">Randomize Groups</button>
+          <button id="resetBtn" class="danger">Reset Tournament</button>
+        </div>
+      </div>
+      <p class="tiny-label">
+        Admin: rename groups, manage player pool, mark refs & captains, select who is included this month, then randomize.
+        Reset clears wins and group assignments, unticks captains, but keeps remembered players.
+      </p>
+
+      <div class="card" style="margin-bottom:10px;">
+        <h3>Groups</h3>
+        <div id="groupsContainer" class="group-list"></div>
+      </div>
+
+      <div id="playersBubble" class="bubble-card">
+        <div class="flex-space">
+          <div>
+            <h3>Remembered Players</h3>
+            <p class="tiny-label">
+              Click a name to toggle whether they are included in the next randomization (green = selected).
+            </p>
+          </div>
+          <div>
+            <span class="tiny-label">
+              Selected for this month:
+              <span id="selectedCount">0</span> / 32 recommended
+            </span>
+          </div>
+        </div>
+
+        <div class="players-layout">
+          <div>
+            <div class="search-row">
+              <input id="playerSearch" placeholder="Search players..." />
+            </div>
+            <div class="flex" style="margin-bottom:6px;">
+              <input id="newPlayerName" placeholder="Add player name" />
+              <button id="addPlayerBtn">Add</button>
+            </div>
+            <div id="nameSuggestion" class="hint"></div>
+            <div id="peopleContainer" class="player-list"></div>
+          </div>
+
+          <div>
+            <h4 style="margin:0 0 4px 0;">Selected for randomization</h4>
+            <div id="selectedContainer" class="selected-list"></div>
+          </div>
+        </div>
+
+        <div class="dev-tools" id="devTools">
+          <span class="tiny-label">Admin tools:</span>
+          <button id="testNamesBtn" class="secondary">Add test names</button>
+          <button id="clearPeopleBtn" class="danger">Clear remembered</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Matches tab -->
+    <div id="tab-matches" class="tab card" style="display:none;">
+      <div class="flex-space">
+        <h2>Matches</h2>
+        <div class="flex">
+          <label class="tiny-label">Filter:</label>
+          <select id="roundFilter">
+            <option value="">All Rounds</option>
+          </select>
+          <select id="instanceFilter">
+            <option value="">All Instances</option>
+          </select>
+        </div>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Round</th>
+              <th>Instance</th>
+              <th>Mini</th>
+              <th>Room</th>
+              <th>Group 1</th>
+              <th>Player 1</th>
+              <th>Win 1</th>
+              <th>Group 2</th>
+              <th>Player 2</th>
+              <th>Win 2</th>
+            </tr>
+          </thead>
+          <tbody id="matchesBody"></tbody>
+        </table>
+      </div>
+      <p class="tiny-label">
+        Anyone can click Win or ✕ to update a result. Changes update live for everyone.
+      </p>
+    </div>
+
+    <!-- Scoreboard tab -->
+    <div id="tab-scoreboard" class="tab card" style="display:none;">
+      <h2>Scoreboard</h2>
+      <p class="tiny-label">Sorted by total wins. Player name and wins only.</p>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Player</th>
+              <th>Wins</th>
+            </tr>
+          </thead>
+          <tbody id="scoreboardBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Modal -->
+  <div id="modalOverlay">
+    <div id="modal">
+      <h3 id="modalTitle">Confirm</h3>
+      <p id="modalMessage"></p>
+      <div id="modalButtons">
+        <button id="modalCancel" class="secondary">Cancel</button>
+        <button id="modalConfirm" class="danger">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    (function() {
+      const socket = io();
+
+      let state = null;
+      let isAdmin = false;
+
+      const adminStatus = document.getElementById('adminStatus');
+      const adminPassword = document.getElementById('adminPassword');
+      const adminLoginBtn = document.getElementById('adminLoginBtn');
+
+      const tabBtnGroups = document.getElementById('tabBtn-groups');
+      const tabBtnMatches = document.getElementById('tabBtn-matches');
+      const tabBtnScoreboard = document.getElementById('tabBtn-scoreboard');
+
+      const playersBubble = document.getElementById('playersBubble');
+
+      const groupsContainer = document.getElementById('groupsContainer');
+
+      const playerSearch = document.getElementById('playerSearch');
+      const newPlayerNameInput = document.getElementById('newPlayerName');
+      const addPlayerBtn = document.getElementById('addPlayerBtn');
+      const nameSuggestion = document.getElementById('nameSuggestion');
+      const peopleContainer = document.getElementById('peopleContainer');
+      const selectedContainer = document.getElementById('selectedContainer');
+      const selectedCount = document.getElementById('selectedCount');
+
+      const testNamesBtn = document.getElementById('testNamesBtn');
+      const clearPeopleBtn = document.getElementById('clearPeopleBtn');
+      const devTools = document.getElementById('devTools');
+
+      const randomizeBtn = document.getElementById('randomizeBtn');
+      const resetBtn = document.getElementById('resetBtn');
+
+      const matchesBody = document.getElementById('matchesBody');
+      const scoreboardBody = document.getElementById('scoreboardBody');
+      const roundFilter = document.getElementById('roundFilter');
+      const instanceFilter = document.getElementById('instanceFilter');
+
+      const toast = document.getElementById('toast');
+      const modalOverlay = document.getElementById('modalOverlay');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalMessage = document.getElementById('modalMessage');
+      const modalCancel = document.getElementById('modalCancel');
+      const modalConfirm = document.getElementById('modalConfirm');
+      let currentModal = null; // { onConfirm }
+
+      // Tabs
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      const tabs = document.querySelectorAll('.tab');
+
+      tabButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          tabButtons.forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+
+          const tabName = btn.getAttribute('data-tab');
+          tabs.forEach(function(t) { t.style.display = 'none'; });
+          document.getElementById('tab-' + tabName).style.display = 'block';
+        });
+      });
+
+      // Toast
+      function showToast(message, duration) {
+        if (!duration) duration = 3000;
+        toast.textContent = message;
+        toast.style.display = 'block';
+        setTimeout(function() {
+          toast.style.display = 'none';
+        }, duration);
+      }
+
+      // Modal
+      function openModal(title, message, onConfirm) {
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+        currentModal = { onConfirm: onConfirm };
+        modalOverlay.style.display = 'flex';
+      }
+
+      function closeModal() {
+        modalOverlay.style.display = 'none';
+        currentModal = null;
+      }
+
+      modalCancel.addEventListener('click', function() {
+        closeModal();
+      });
+      modalConfirm.addEventListener('click', function() {
+        if (currentModal && typeof currentModal.onConfirm === 'function') {
+          currentModal.onConfirm();
+        }
+        closeModal();
+      });
+
+      // Admin login
+      adminLoginBtn.addEventListener('click', function() {
+        const pwd = adminPassword.value.trim();
+        if (!pwd) return;
+        socket.emit('loginAdmin', pwd);
+      });
+
+      socket.on('adminStatus', function(data) {
+        if (data.ok) {
+          isAdmin = true;
+          adminStatus.textContent = 'Admin';
+          adminStatus.style.color = '#2ecc71';
+          showToast('Logged in as admin', 2000);
+        } else {
+          isAdmin = false;
+          adminStatus.textContent = 'Not admin (wrong password)';
+          adminStatus.style.color = '#e74c3c';
+          showToast('Wrong admin password', 3000);
+        }
+        render();
+      });
+
+      // State from server
+      socket.on('state', function(newState) {
+        state = newState;
+        populateRoundFilter();
+        render();
+      });
+
+      socket.on('errorMsg', function(data) {
+        showToast(data.msg || 'Error');
+      });
+
+      // Filters
+      roundFilter.addEventListener('change', function() {
+        renderMatches();
+      });
+      instanceFilter.addEventListener('change', function() {
+        renderMatches();
+      });
+
+      function populateRoundFilter() {
+        if (!state) return;
+        const rounds = {};
+        state.matches.forEach(function(m) {
+          rounds[m.round] = true;
+        });
+
+        const currentVal = roundFilter.value;
+        roundFilter.innerHTML = '<option value="">All Rounds</option>';
+        Object.keys(rounds).sort(function(a,b){return a-b;}).forEach(function(r) {
+          const opt = document.createElement('option');
+          opt.value = r;
+          opt.textContent = 'Round ' + r;
+          roundFilter.appendChild(opt);
+        });
+        if (currentVal) roundFilter.value = currentVal;
+      }
+
+      // Player search
+      playerSearch.addEventListener('input', function() {
+        renderPeople();
+      });
+
+      // Add player (with inline suggestion)
+      addPlayerBtn.addEventListener('click', handleAddPlayer);
+      newPlayerNameInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleAddPlayer();
+        }
+      });
+
+      function handleAddPlayer() {
+        if (!isAdmin) {
+          showToast('Only admin can add players', 2500);
+          return;
+        }
+        if (!state) return;
+        const name = newPlayerNameInput.value.trim();
+        nameSuggestion.textContent = '';
+        if (!name) return;
+
+        const existing = (state.people || []).find(function(p) {
+          return p.name.toLowerCase() === name.toLowerCase();
+        });
+
+        if (existing) {
+          nameSuggestion.innerHTML =
+            'I already have <span class="suggestion-name">' + existing.name +
+            '</span> remembered. Did you mean this person? ' +
+            '<button id="useExistingBtn" class="small secondary">Use existing</button> ' +
+            '<button id="addAnywayBtn" class="small">Add new "' + name + '"</button>';
+
+          const useBtn = document.getElementById('useExistingBtn');
+          const addBtn = document.getElementById('addAnywayBtn');
+
+          useBtn.onclick = function() {
+            newPlayerNameInput.value = '';
+            nameSuggestion.textContent = '';
+            const pill = document.querySelector('.player-pill[data-id="' + existing.id + '"]');
+            if (pill) {
+              pill.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              pill.classList.add('selected');
+              setTimeout(function() {
+                pill.classList.remove('selected');
+              }, 1500);
+            }
+          };
+
+          addBtn.onclick = function() {
+            socket.emit('addPerson', { name: name });
+            newPlayerNameInput.value = '';
+            nameSuggestion.textContent = '';
+          };
+
+          return;
+        }
+
+        socket.emit('addPerson', { name: name });
+        newPlayerNameInput.value = '';
+      }
+
+      // Test names & clear remembered
+      testNamesBtn.addEventListener('click', function() {
+        if (!isAdmin) {
+          showToast('Only admin can use test names', 2500);
+          return;
+        }
+        socket.emit('addTestPeople');
+      });
+
+      clearPeopleBtn.addEventListener('click', function() {
+        if (!isAdmin) {
+          showToast('Only admin can clear remembered', 2500);
+          return;
+        }
+        openModal(
+          'Clear remembered players',
+          'This will remove ALL remembered players and clear group assignments. Are you sure?',
+          function() {
+            socket.emit('clearPeople');
+            showToast('Remembered players cleared', 2000);
+          }
+        );
+      });
+
+      // Randomize & reset
+      randomizeBtn.addEventListener('click', function() {
+        if (!isAdmin) {
+          showToast('Only admin can randomize', 2500);
+          return;
+        }
+        socket.emit('randomizeGroups');
+      });
+
+      resetBtn.addEventListener('click', function() {
+        if (!isAdmin) {
+          showToast('Only admin can reset', 2500);
+          return;
+        }
+        openModal(
+          'Reset tournament',
+          'This will clear ALL wins, group assignments, and untick captains, but keep remembered players. Are you sure?',
+          function() {
+            socket.emit('resetTournament');
+            showToast('Tournament reset', 2000);
+          }
+        );
+      });
+
+      function render() {
+        if (!state) return;
+        renderGroups();
+        renderPeople();
+        renderMatches();
+        renderScoreboard();
+
+        randomizeBtn.style.display = isAdmin ? 'inline-block' : 'none';
+        resetBtn.style.display = isAdmin ? 'inline-block' : 'none';
+        newPlayerNameInput.disabled = !isAdmin;
+        addPlayerBtn.disabled = !isAdmin;
+        devTools.style.display = isAdmin ? 'block' : 'none';
+
+        // Hide remembered players bubble and scoreboard tab for non-admins
+        if (isAdmin) {
+          playersBubble.style.display = 'block';
+          tabBtnScoreboard.style.display = 'inline-block';
+        } else {
+          playersBubble.style.display = 'none';
+          tabBtnScoreboard.style.display = 'none';
+
+          // If currently on scoreboard tab, switch to matches
+          const activeTab = document.querySelector('.tab-btn.active');
+          if (activeTab && activeTab.getAttribute('data-tab') === 'scoreboard') {
+            activeTab.classList.remove('active');
+            tabBtnMatches.classList.add('active');
+            document.getElementById('tab-scoreboard').style.display = 'none';
+            document.getElementById('tab-matches').style.display = 'block';
+          }
+        }
+      }
+
+      function renderGroups() {
+        groupsContainer.innerHTML = '';
+        if (!state) return;
+
+        const peopleById = {};
+        (state.people || []).forEach(function(p) {
+          peopleById[p.id] = p;
+        });
+
+        (state.groups || []).forEach(function(g) {
+          const card = document.createElement('div');
+          card.className = 'group-card';
+
+          const title = document.createElement('h3');
+          const nameSpan = document.createElement('span');
+          nameSpan.textContent = g.name + ' (' + g.id + ')';
+          title.appendChild(nameSpan);
+
+          if (isAdmin) {
+            const editBtn = document.createElement('button');
+            editBtn.className = 'icon-btn';
+            editBtn.innerHTML = '✎';
+            editBtn.title = 'Edit group name';
+            editBtn.addEventListener('click', function() {
+              const newName = prompt('New name for ' + g.id, g.name);
+              if (newName && newName.trim()) {
+                socket.emit('updateGroupName', { groupId: g.id, name: newName.trim() });
+              }
+            });
+            title.appendChild(editBtn);
+          }
+
+          card.appendChild(title);
+
+          const groupSlots = (state.slots || []).filter(function(s) {
+            return s.groupId === g.id;
+          }).sort(function(a, b) {
+            return a.letter.localeCompare(b.letter);
+          });
+
+          groupSlots.forEach(function(s) {
+            const row = document.createElement('div');
+            row.className = 'player-row';
+
+            const left = document.createElement('span');
+            left.textContent = s.letter + ':';
+            row.appendChild(left);
+
+            const right = document.createElement('span');
+            const person = s.personId != null ? peopleById[s.personId] : null;
+            right.textContent = person ? person.name : '—';
+            row.appendChild(right);
+
+            card.appendChild(row);
+          });
+
+          groupsContainer.appendChild(card);
+        });
+      }
+
+      function renderPeople() {
+        peopleContainer.innerHTML = '';
+        selectedContainer.innerHTML = '';
+        if (!state) return;
+
+        const all = state.people || [];
+        const search = playerSearch.value.trim().toLowerCase();
+
+        let filtered = all;
+        if (search) {
+          filtered = all.filter(function(p) {
+            return p.name.toLowerCase().indexOf(search) === 0;
+          });
+        }
+
+        filtered.sort(function(a, b) {
+          return a.name.localeCompare(b.name);
+        });
+
+        filtered.forEach(function(person) {
+          const pill = document.createElement('div');
+          pill.className = 'player-pill';
+          pill.setAttribute('data-id', person.id);
+          if (person.isSelected) pill.classList.add('selected');
+
+          pill.addEventListener('click', function(e) {
+            if (!isAdmin) return;
+            if (e.target.closest('.player-actions') || e.target.closest('.edit-panel')) return;
+            const newSelected = !person.isSelected;
+            socket.emit('setPersonSelected', { personId: person.id, isSelected: newSelected });
+          });
+
+          const main = document.createElement('div');
+          main.className = 'player-main';
+
+          const nameSpan = document.createElement('span');
+          nameSpan.className = 'player-name';
+          nameSpan.textContent = person.name;
+          main.appendChild(nameSpan);
+
+          if (person.isRef) {
+            const badge = document.createElement('span');
+            badge.className = 'badge';
+            badge.textContent = person.isCaptain ? 'Ref Captain' : 'Ref Player';
+            main.appendChild(badge);
+          }
+
+          pill.appendChild(main);
+
+          if (isAdmin) {
+            const actions = document.createElement('div');
+            actions.className = 'player-actions';
+
+            const editBtn = document.createElement('button');
+            editBtn.className = 'icon-btn';
+            editBtn.innerHTML = '✎';
+            editBtn.title = 'Edit ref/captain';
+            actions.appendChild(editBtn);
+
+            const delBtn = document.createElement('button');
+            delBtn.className = 'player-delete';
+            delBtn.textContent = '✕';
+            delBtn.title = 'Forget this player';
+            delBtn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              openModal(
+                'Delete player',
+                'Delete "' + person.name + '" from remembered players? This also removes them from any group.',
+                function() {
+                  socket.emit('deletePerson', { personId: person.id });
+                }
+              );
+            });
+            actions.appendChild(delBtn);
+
+            pill.appendChild(actions);
+
+            let panel = null;
+            editBtn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              if (panel) {
+                panel.remove();
+                panel = null;
+                return;
+              }
+              panel = document.createElement('div');
+              panel.className = 'edit-panel';
+
+              // store temporary state
+              let tempIsRef = person.isRef;
+              let tempIsCaptain = person.isCaptain;
+
+              const refLabel = document.createElement('label');
+              const refCb = document.createElement('input');
+              refCb.type = 'checkbox';
+              refCb.checked = tempIsRef;
+              refCb.addEventListener('change', function() {
+                tempIsRef = refCb.checked;
+                if (!tempIsRef) {
+                  tempIsCaptain = false;
+                  capCb.checked = false;
+                  capCb.disabled = true;
+                } else {
+                  capCb.disabled = false;
+                }
+              });
+              refLabel.appendChild(refCb);
+              refLabel.appendChild(document.createTextNode('Ref'));
+              panel.appendChild(refLabel);
+
+              const capLabel = document.createElement('label');
+              const capCb = document.createElement('input');
+              capCb.type = 'checkbox';
+              capCb.checked = tempIsCaptain;
+              capCb.disabled = !tempIsRef;
+              capCb.addEventListener('change', function() {
+                tempIsCaptain = capCb.checked;
+              });
+              capLabel.appendChild(capCb);
+              capLabel.appendChild(document.createTextNode('Captain (A slot)'));
+              panel.appendChild(capLabel);
+
+              const buttonsDiv = document.createElement('div');
+              buttonsDiv.className = 'edit-panel-buttons';
+
+              const cancelBtn = document.createElement('button');
+              cancelBtn.className = 'small secondary';
+              cancelBtn.textContent = 'Cancel';
+              cancelBtn.addEventListener('click', function(ev) {
+                ev.stopPropagation();
+                panel.remove();
+                panel = null;
+              });
+              buttonsDiv.appendChild(cancelBtn);
+
+              const confirmBtn = document.createElement('button');
+              confirmBtn.className = 'small';
+              confirmBtn.textContent = 'Confirm';
+              confirmBtn.addEventListener('click', function(ev) {
+                ev.stopPropagation();
+                socket.emit('updatePersonFlags', {
+                  personId: person.id,
+                  isRef: tempIsRef,
+                  isCaptain: tempIsCaptain
+                });
+                panel.remove();
+                panel = null;
+              });
+              buttonsDiv.appendChild(confirmBtn);
+
+              panel.appendChild(buttonsDiv);
+
+              pill.appendChild(panel);
+            });
+          }
+
+          peopleContainer.appendChild(pill);
+        });
+
+        const selected = all.filter(function(p) { return p.isSelected; }).sort(function(a, b) {
+          return a.name.localeCompare(b.name);
+        });
+        selectedCount.textContent = selected.length;
+        if (selected.length === 0) {
+          const p = document.createElement('p');
+          p.className = 'tiny-label';
+          p.textContent = 'No players selected yet. Click names on the left to select them.';
+          selectedContainer.appendChild(p);
+        } else {
+          selected.forEach(function(p) {
+            const item = document.createElement('div');
+            item.className = 'selected-item';
+            let label = p.name;
+            if (p.isRef && p.isCaptain) label += ' (Ref Captain)';
+            else if (p.isRef) label += ' (Ref)';
+            item.textContent = label;
+            selectedContainer.appendChild(item);
+          });
+        }
+      }
+
+      function renderMatches() {
+        matchesBody.innerHTML = '';
+        if (!state) return;
+
+        const peopleById = {};
+        (state.people || []).forEach(function(p) {
+          peopleById[p.id] = p;
+        });
+
+        const personBySlotKey = {};
+        (state.slots || []).forEach(function(s) {
+          if (s.personId != null) {
+            personBySlotKey[s.groupId + '-' + s.letter] = peopleById[s.personId];
+          }
+        });
+
+        const selectedRound = roundFilter.value ? parseInt(roundFilter.value, 10) : null;
+        const selectedInstance = instanceFilter.value ? parseInt(instanceFilter.value, 10) : null;
+
+        const instSet = {};
+        (state.matches || []).forEach(function(m) {
+          if (selectedRound === null || m.round === selectedRound) {
+            instSet[m.instance] = true;
+          }
+        });
+        const currentInstVal = instanceFilter.value;
+        instanceFilter.innerHTML = '<option value="">All Instances</option>';
+        Object.keys(instSet).sort(function(a,b){return a-b;}).forEach(function(i) {
+          const opt = document.createElement('option');
+          opt.value = i;
+          opt.textContent = 'Instance ' + i;
+          instanceFilter.appendChild(opt);
+        });
+        if (currentInstVal) instanceFilter.value = currentInstVal;
+
+        const filtered = (state.matches || []).filter(function(m) {
+          if (selectedRound !== null && m.round !== selectedRound) return false;
+          if (selectedInstance !== null && m.instance !== selectedInstance) return false;
+          return true;
+        });
+
+        filtered.sort(function(a, b) {
+          if (a.round !== b.round) return a.round - b.round;
+          if (a.instance !== b.instance) return a.instance - b.instance;
+          if (a.miniRound !== b.miniRound) return a.miniRound - b.miniRound;
+          return a.room - b.room;
+        });
+
+        filtered.forEach(function(m) {
+          const tr = document.createElement('tr');
+
+          const p1 = personBySlotKey[m.group1Id + '-' + m.player1Letter];
+          const p2 = personBySlotKey[m.group2Id + '-' + m.player2Letter];
+
+          const cells = [
+            m.round,
+            m.instance,
+            m.miniRound,
+            m.room,
+            m.group1Id,
+            p1 ? p1.name : m.player1Letter,
+            null,
+            m.group2Id,
+            p2 ? p2.name : m.player2Letter,
+            null
+          ];
+
+          cells.forEach(function(val, idx) {
+            const td = document.createElement('td');
+            if (idx === 6) {
+              const winBtn = document.createElement('button');
+              winBtn.textContent = 'Win';
+              winBtn.className = 'small';
+              if (m.win1) winBtn.classList.add('winner');
+              winBtn.addEventListener('click', function() {
+                socket.emit('setMatchWinner', { matchId: m.id, winner: 'p1' });
+              });
+              td.appendChild(winBtn);
+
+              const clearBtn = document.createElement('button');
+              clearBtn.textContent = '✕';
+              clearBtn.className = 'small secondary';
+              clearBtn.style.marginLeft = '4px';
+              clearBtn.addEventListener('click', function() {
+                socket.emit('setMatchWinner', { matchId: m.id, winner: 'clear' });
+              });
+              td.appendChild(clearBtn);
+            } else if (idx === 9) {
+              const winBtn2 = document.createElement('button');
+              winBtn2.textContent = 'Win';
+              winBtn2.className = 'small';
+              if (m.win2) winBtn2.classList.add('winner');
+              winBtn2.addEventListener('click', function() {
+                socket.emit('setMatchWinner', { matchId: m.id, winner: 'p2' });
+              });
+              td.appendChild(winBtn2);
+
+              const clearBtn2 = document.createElement('button');
+              clearBtn2.textContent = '✕';
+              clearBtn2.className = 'small secondary';
+              clearBtn2.style.marginLeft = '4px';
+              clearBtn2.addEventListener('click', function() {
+                socket.emit('setMatchWinner', { matchId: m.id, winner: 'clear' });
+              });
+              td.appendChild(clearBtn2);
+            } else {
+              td.textContent = val;
+            }
+            tr.appendChild(td);
+          });
+
+          matchesBody.appendChild(tr);
+        });
+      }
+
+      function renderScoreboard() {
+        scoreboardBody.innerHTML = '';
+        if (!state) return;
+        (state.scoreboard || []).forEach(function(entry, idx) {
+          const tr = document.createElement('tr');
+          const cols = [
+            idx + 1,
+            entry.name,
+            entry.wins
+          ];
+          cols.forEach(function(val) {
+            const td = document.createElement('td');
+            td.textContent = val;
+            tr.appendChild(td);
+          });
+          scoreboardBody.appendChild(tr);
+        });
+      }
+
+    })();
+  </script>
+</body>
+</html>
