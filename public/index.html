@@ -10,7 +10,9 @@
       padding: 0;
       background: #0b1020;
       color: #f5f5f5;
+      font-size: 16px;          /* base text a bit bigger */
     }
+
     header {
       padding: 12px 20px;
       background: #151b30;
@@ -50,9 +52,11 @@
       background: #e74c3c;
     }
     button.small {
-      padding: 2px 6px;
-      font-size: 12px;
+      padding: 6px 12px;        /* more padding = bigger tap target */
+      font-size: 14px;          /* larger text */
+      border-radius: 999px;     /* pill shape, easier to see */
     }
+
     main {
       padding: 12px 20px 40px;
     }
@@ -82,10 +86,10 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
+      font-size: 15px;
     }
     th, td {
-      padding: 6px 8px;
+      padding: 10px 12px;
       border-bottom: 1px solid #252b42;
       text-align: left;
     }
@@ -125,22 +129,24 @@
     .group-card {
       background: #101528;
       border-radius: 8px;
-      padding: 8px;
+      padding: 14px;            /* was 8px */
     }
+
     .group-card h3 {
-      margin: 0 0 4px 0;
-      font-size: 14px;
+      margin: 0 0 6px 0;        /* a bit more space */
+      font-size: 18px;          /* bigger title text */
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 6px;
     }
+
     .player-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 13px;
-      margin: 2px 0;
+      font-size: 15px;          /* bigger slot text */
+      margin: 4px 0;            /* more vertical space per player */
     }
     .icon-btn {
       background: transparent;
